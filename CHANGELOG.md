@@ -7,7 +7,7 @@
 - Saving a response or exporting response files no longer stalls the page when a URL contains a long run of spaces or dots
 - Screen-reader labels for the rule tester and the file picker; the capture timeline is announced as a labelled figure rather than an image, and the panel divider announces its position
 - The start-screen illustration now uses its dark colours when dark mode is picked with the theme button, not only when it comes from the system setting
-- Code clean-up after a SonarQube Cloud review, with no change in behaviour: the filter box parser, a pattern in the sensitive data rules and the user guide's note styles
+- Code clean-up after a SonarQube Cloud review, with no change in behaviour: the filter box parser, a pattern in the sensitive data rules, the user guide's note styles, and the theme colours, now each defined once
 
 ## 1.1.0 (17 November 2026)
 
