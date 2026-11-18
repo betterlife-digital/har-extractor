@@ -87,7 +87,7 @@ later is a complete rewrite and contains none of its code.
 
 ## Licence
 
-Copyright (c) 2026 Ian Grom
+Copyright (c) 2026 Gautam
 
 Released under the [MIT License](LICENSE): you are free to use, copy, modify, merge, publish, distribute,
 sublicense and sell copies of HAR Extractor, provided the copyright notice and the licence text are

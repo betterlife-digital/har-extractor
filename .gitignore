@@ -1,0 +1,7 @@
+# Never commit real captures: they contain passwords, cookies and tokens.
+*.har
+
+# Operating-system clutter
+.DS_Store
+Thumbs.db
+desktop.ini
