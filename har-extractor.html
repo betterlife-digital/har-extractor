@@ -18,7 +18,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-lWzdTFScCzfL24mnDNehNYmGGX4nr83j4Xnr24blAfs='; style-src 'sha256-S+diHYuSxu2YS80vdV2hWZYOPcTK9/zsTqihtoN4irM='; img-src blob: data:; connect-src 'none'; font-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-lWzdTFScCzfL24mnDNehNYmGGX4nr83j4Xnr24blAfs='; style-src 'sha256-Pw5MiYvESxPCfANAG3mVsPgd19kUr3RSeNcXS696yX8='; img-src blob: data:; connect-src 'none'; font-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="color-scheme" content="light dark">
 <title>HAR Extractor</title>
@@ -28,7 +28,7 @@
  * SPDX-License-Identifier: MIT
  *
  * HAR Extractor: read, clean and export HAR files, entirely in the browser.
- * Copyright (C) 2026 Ian Grom
+ * Copyright (C) 2026 Gautam
  *
  * Licensed under the MIT License: you may use, copy, modify, merge, publish, distribute,
  * sublicense and sell copies, provided this copyright notice and the licence text are
@@ -45,48 +45,59 @@
    raspberry reserved for sensitive data only.
    ========================================================================== */
 
+/* Theme switch. Every colour that differs between the themes is written once, as
+     --name: var(--light, <light colour>) var(--dark, <dark colour>);
+   Exactly one of --light and --dark is "on" (initial, so var() falls back to the colour after it);
+   the other is a single space, which removes its colour. The system setting and the theme button only
+   flip these two switches, so each theme's colours live in one place. */
+:root { --light: initial; --dark: ; color-scheme: light; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --light: ; --dark: initial; color-scheme: dark; }
+}
+:root[data-theme="dark"] { --light: ; --dark: initial; color-scheme: dark; }
+
 :root {
-  --bg: #e7ebf0;
-  --surface: #f6f8fa;
-  --surface-2: #ffffff;
-  --surface-3: #eef1f5;
-  --line: #d2d9e1;
-  --line-soft: #e3e8ee;
-  --ink: #17202b;
-  --ink-2: #485465;
-  --ink-3: #78849a;
-  --accent: #2549c7;
-  --accent-hover: #1d3ba6;
-  --accent-soft: #e2e8fb;
-  --accent-ink: #ffffff;
-  --row-sel: #dbe3fb;
-  --row-hover: #eef2fb;
-  --flag: #b4235a;
-  --flag-soft: #fbe2ec;
-  --flag-line: #e7a3bd;
-  --ok: #1d7a4c;
-  --warn: #9a5d00;
-  --err: #c0302b;
-  --err-soft: #fbe6e5;
+  --bg:           var(--light, #e7ebf0) var(--dark, #0f141b);
+  --surface:      var(--light, #f6f8fa) var(--dark, #151b23);
+  --surface-2:    var(--light, #ffffff) var(--dark, #1a212b);
+  --surface-3:    var(--light, #eef1f5) var(--dark, #1f2732);
+  --line:         var(--light, #d2d9e1) var(--dark, #2b3542);
+  --line-soft:    var(--light, #e3e8ee) var(--dark, #232c37);
+  --ink:          var(--light, #17202b) var(--dark, #e4e9ef);
+  --ink-2:        var(--light, #485465) var(--dark, #a7b2c0);
+  --ink-3:        var(--light, #78849a) var(--dark, #75818f);
+  --accent:       var(--light, #2549c7) var(--dark, #7d9cff);
+  --accent-hover: var(--light, #1d3ba6) var(--dark, #9bb3ff);
+  --accent-soft:  var(--light, #e2e8fb) var(--dark, #23305a);
+  --accent-ink:   var(--light, #ffffff) var(--dark, #0f141b);
+  --row-sel:      var(--light, #dbe3fb) var(--dark, #24325c);
+  --row-hover:    var(--light, #eef2fb) var(--dark, #1d2533);
+  --flag:         var(--light, #b4235a) var(--dark, #ff7fab);
+  --flag-soft:    var(--light, #fbe2ec) var(--dark, #44192b);
+  --flag-line:    var(--light, #e7a3bd) var(--dark, #7d2f4d);
+  --ok:           var(--light, #1d7a4c) var(--dark, #4cc38a);
+  --warn:         var(--light, #9a5d00) var(--dark, #e0a640);
+  --err:          var(--light, #c0302b) var(--dark, #ff7b72);
+  --err-soft:     var(--light, #fbe6e5) var(--dark, #3d1e1f);
 
-  --t-fetch: #2549c7;
-  --t-doc: #1d7a4c;
-  --t-js: #b07300;
-  --t-css: #7a3fc2;
-  --t-img: #0b8585;
-  --t-font: #8a5a2b;
-  --t-media: #c2366b;
-  --t-ws: #4a5666;
-  --t-other: #8c96a5;
+  --t-fetch:      var(--light, #2549c7) var(--dark, #7d9cff);
+  --t-doc:        var(--light, #1d7a4c) var(--dark, #4cc38a);
+  --t-js:         var(--light, #b07300) var(--dark, #e0a640);
+  --t-css:        var(--light, #7a3fc2) var(--dark, #b48cf2);
+  --t-img:        var(--light, #0b8585) var(--dark, #3fc1c1);
+  --t-font:       var(--light, #8a5a2b) var(--dark, #c99b6b);
+  --t-media:      var(--light, #c2366b) var(--dark, #f27aa3);
+  --t-ws:         var(--light, #4a5666) var(--dark, #a7b2c0);
+  --t-other:      var(--light, #8c96a5) var(--dark, #6f7b8a);
 
-  --logo-block: #ce1c47;   /* redaction block in the start-screen art; matches the logo red */
+  --logo-block:   var(--light, #ce1c47) var(--dark, #e33a62); /* redaction block in the start-screen art; matches the logo red */
 
   /* start-screen illustration */
-  --da-mint: #00b386;
-  --da-cyan: #00a0d2;
-  --da-azure: #2f62ff;
-  --da-violet: #7c3aff;
-  --da-magenta: #d020c8;
+  --da-mint:      var(--light, #00b386) var(--dark, #2ff5c0);
+  --da-cyan:      var(--light, #00a0d2) var(--dark, #1ee0ff);
+  --da-azure:     var(--light, #2f62ff) var(--dark, #4f8cff);
+  --da-violet:    var(--light, #7c3aff) var(--dark, #a274ff);
+  --da-magenta:   var(--light, #d020c8) var(--dark, #f45cff);
 
   --font-ui: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Ubuntu, Cantarell, sans-serif;
   --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", "JetBrains Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace;
@@ -96,94 +107,8 @@
   --radius-l: 12px;
   --row-h: 30px;
   --detail-w: 46%;
-  --shadow-pop: 0 18px 50px rgba(18, 28, 45, 0.22), 0 2px 8px rgba(18, 28, 45, 0.12);
-
-  color-scheme: light;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #0f141b;
-    --surface: #151b23;
-    --surface-2: #1a212b;
-    --surface-3: #1f2732;
-    --line: #2b3542;
-    --line-soft: #232c37;
-    --ink: #e4e9ef;
-    --ink-2: #a7b2c0;
-    --ink-3: #75818f;
-    --accent: #7d9cff;
-    --accent-hover: #9bb3ff;
-    --accent-soft: #23305a;
-    --accent-ink: #0f141b;
-    --row-sel: #24325c;
-    --row-hover: #1d2533;
-    --flag: #ff7fab;
-    --flag-soft: #44192b;
-    --flag-line: #7d2f4d;
-    --ok: #4cc38a;
-    --warn: #e0a640;
-    --err: #ff7b72;
-    --err-soft: #3d1e1f;
-    --t-fetch: #7d9cff;
-    --t-doc: #4cc38a;
-    --t-js: #e0a640;
-    --t-css: #b48cf2;
-    --t-img: #3fc1c1;
-    --t-font: #c99b6b;
-    --t-media: #f27aa3;
-    --t-ws: #a7b2c0;
-    --t-other: #6f7b8a;
-    --logo-block: #e33a62;
-    --da-mint: #2ff5c0;
-    --da-cyan: #1ee0ff;
-    --da-azure: #4f8cff;
-    --da-violet: #a274ff;
-    --da-magenta: #f45cff;
-    --shadow-pop: 0 18px 50px rgba(0, 0, 0, 0.55), 0 2px 8px rgba(0, 0, 0, 0.4);
-    color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #0f141b;
-  --surface: #151b23;
-  --surface-2: #1a212b;
-  --surface-3: #1f2732;
-  --line: #2b3542;
-  --line-soft: #232c37;
-  --ink: #e4e9ef;
-  --ink-2: #a7b2c0;
-  --ink-3: #75818f;
-  --accent: #7d9cff;
-  --accent-hover: #9bb3ff;
-  --accent-soft: #23305a;
-  --accent-ink: #0f141b;
-  --row-sel: #24325c;
-  --row-hover: #1d2533;
-  --flag: #ff7fab;
-  --flag-soft: #44192b;
-  --flag-line: #7d2f4d;
-  --ok: #4cc38a;
-  --warn: #e0a640;
-  --err: #ff7b72;
-  --err-soft: #3d1e1f;
-  --t-fetch: #7d9cff;
-  --t-doc: #4cc38a;
-  --t-js: #e0a640;
-  --t-css: #b48cf2;
-  --t-img: #3fc1c1;
-  --t-font: #c99b6b;
-  --t-media: #f27aa3;
-  --t-ws: #a7b2c0;
-  --t-other: #6f7b8a;
-  --logo-block: #e33a62;
-  --da-mint: #2ff5c0;
-  --da-cyan: #1ee0ff;
-  --da-azure: #4f8cff;
-  --da-violet: #a274ff;
-  --da-magenta: #f45cff;
-  --shadow-pop: 0 18px 50px rgba(0, 0, 0, 0.55), 0 2px 8px rgba(0, 0, 0, 0.4);
-  color-scheme: dark;
+  --shadow-pop:   var(--light, 0 18px 50px rgba(18, 28, 45, 0.22), 0 2px 8px rgba(18, 28, 45, 0.12))
+                  var(--dark, 0 18px 50px rgba(0, 0, 0, 0.55), 0 2px 8px rgba(0, 0, 0, 0.4));
 }
 
 /* ---------- base ---------- */
@@ -347,13 +272,8 @@ textarea.input { height: auto; padding: 8px 10px; resize: vertical; font-family:
 .brand { display: flex; align-items: center; gap: 9px; font-weight: 650; letter-spacing: -0.01em; font-size: 15px; }
 /* Logo: images from brand/, sized by build.py; the dark version (if any) swaps in for dark mode. */
 .logo { display: block; flex: none; object-fit: contain; }
-.logo-dark { display: none; }
-:root[data-theme="dark"] .logo-light { display: none; }
-:root[data-theme="dark"] .logo-dark { display: block; }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .logo-light { display: none; }
-  :root:not([data-theme="light"]) .logo-dark { display: block; }
-}
+.logo-light { display: var(--light, block) var(--dark, none); }
+.logo-dark { display: var(--light, none) var(--dark, block); }
 
 .filechip {
   display: flex;
@@ -406,10 +326,7 @@ textarea.input { height: auto; padding: 8px 10px; resize: vertical; font-family:
 .da-wait { opacity: 0.55; }
 .da-spark { fill: var(--surface); stroke-width: 1.6; }
 .da-redact { fill: var(--logo-block); }
-:root[data-theme="dark"] .da-trails { filter: url(#da-glow); }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .da-trails { filter: url(#da-glow); }
-}
+.da-trails { filter: var(--light, none) var(--dark, url(#da-glow)); }
 
 .da-bar, .da-wait { transform-box: fill-box; transform-origin: 0 50%; animation: da-grow 0.55s cubic-bezier(0.2, 0.75, 0.25, 1) both; }
 .da-spark { transform-box: fill-box; transform-origin: 50% 50%; animation: da-spark 0.45s ease-out both; }
