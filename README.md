@@ -7,6 +7,17 @@
 
 # HAR Extractor
 
+[![Quality gate status](https://sonarcloud.io/api/project_badges/measure?project=betterlife-digital_har-extractor&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=betterlife-digital_har-extractor)
+
+
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=betterlife-digital_har-extractor&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=betterlife-digital_har-extractor)
+
+
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=betterlife-digital_har-extractor&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=betterlife-digital_har-extractor)
+
+
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=betterlife-digital_har-extractor&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=betterlife-digital_har-extractor)
+
 **Read, clean and export HAR files, entirely in your browser.**
 
 HAR Extractor opens the `.har` network recordings that browsers save from their developer tools.
